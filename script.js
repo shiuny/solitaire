@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // レンダリング
     // =========================================================================
     function renderAll() {
-        // ヒントが表示されていたら消す
         document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
         tableauEl.innerHTML = ''; foundationsEl.innerHTML = ''; stockEl.innerHTML = ''; wasteEl.innerHTML = '';
 
@@ -150,6 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (card.isFaceUp) {
             cardEl.classList.add('faceup', card.color);
+            if (card.rank === '10') {
+                cardEl.classList.add('is-rank-10');
+            }
             const suitClassName = SUIT_CLASS_MAP[card.suit];
             cardEl.innerHTML = `
                 <div class="card-top"><span class="card-rank">${card.rank}</span><span class="card-suit ${suitClassName}"></span></div>
@@ -450,7 +452,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function findHint() {
         document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
 
-        // 1. 組札への移動 (捨て札 -> 組札, 場札 -> 組札)
         const wasteCard = state.waste.length > 0 ? state.waste[state.waste.length - 1] : null;
         if (wasteCard) {
             for (let i = 0; i < 4; i++) {
@@ -472,8 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-        // 2. カードをめくれる場札間の移動
         for (let i = 0; i < 7; i++) {
             const sourcePile = state.tableau[i];
             for (let j = 0; j < sourcePile.length; j++) {
@@ -489,8 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-        // 3. その他の場札間の移動
         for (let i = 0; i < 7; i++) {
             const sourcePile = state.tableau[i];
             for (let j = 0; j < sourcePile.length; j++) {
@@ -506,8 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-        // 4. 捨て札から場札への移動
         if (wasteCard) {
             for (let i = 0; i < 7; i++) {
                 if (isValidMove(wasteCard, 'tableau', i)) {
@@ -516,13 +511,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-        // 5. 山札を引く
         if (state.stock.length > 0) {
             highlightHint(stockEl, null);
             return;
         }
-
         alert("ヒントはありません。");
     }
 
@@ -582,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         winModal.style.display = 'none'; startGame();
     });
     undoBtn.addEventListener('click', undoMove);
-    hintBtn.addEventListener('click', findHint); // ヒント機能を呼び出すように修正
+    hintBtn.addEventListener('click', findHint);
     settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
     closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
     
