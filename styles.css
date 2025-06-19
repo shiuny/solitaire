@@ -27,8 +27,19 @@ html, body {
     background-color: var(--bg-color);
     color: var(--font-color);
     overflow: hidden; 
-    position: fixed; /* iOSでのアドレスバー問題を軽減 */
+    position: fixed;
+    /* ★★★ 通常時のテキスト選択を有効に戻す ★★★ */
+    user-select: text;
+    -webkit-user-select: text;
+    -webkit-tap-highlight-color: transparent;
 }
+
+/* ★★★ ドラッグ中のみテキスト選択を無効化するクラス ★★★ */
+body.dragging-no-select {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
 
 /* ゲームコンテナ */
 #game-container {
@@ -38,6 +49,9 @@ html, body {
     padding: var(--gap-mobile);
     max-width: 1200px;
     margin: 0 auto;
+    /* ★★★ コンテナ内ではテキスト選択をデフォルトで無効に ★★★ */
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* 横向きスマホでスクロール可能に */
@@ -98,15 +112,8 @@ button:disabled { background-color: #9E9E9E; cursor: not-allowed; }
 .card-rank { line-height: 1; }
 
 /* 「10」の視認性向上のためのスタイル */
-.card.is-rank-10 .card-rank {
-    font-size: 0.85em;
-    letter-spacing: -1px;
-    transform: scaleX(0.95);
-    transform-origin: left;
-}
-.card.is-rank-10 .card-suit {
-    margin-left: 1px;
-}
+.card.is-rank-10 .card-rank { font-size: 0.85em; letter-spacing: -1px; transform: scaleX(0.95); transform-origin: left; }
+.card.is-rank-10 .card-suit { margin-left: 1px; }
 
 .card-suit {
     width: 0.7em; height: 0.7em; margin-left: 2px;
@@ -137,7 +144,6 @@ button:disabled { background-color: #9E9E9E; cursor: not-allowed; }
 .card-back-option { width: 50px; height: 70px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; background-size: cover; }
 .card-back-option.selected { border-color: #4CAF50; }
 
-/* タブレット以上の画面サイズでのスタイル */
 @media (min-width: 768px) {
     #game-container { padding: var(--gap); }
     .game-header, .top-area, .card-piles-container { gap: var(--gap); }

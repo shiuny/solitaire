@@ -167,7 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
     stockEl.addEventListener('click', handleStockClick);
     gameBoard.addEventListener('dblclick', handleDoubleClick);
-    gameBoard.addEventListener('mousedown', handleMouseDown);
+    gameBoard.addEventListener('mousedown', handleInteractionStart);
+    gameBoard.addEventListener('touchstart', handleInteractionStart, { passive: false });
     
     function handleStockClick() {
         if (dragInfo.isDragging) return;
@@ -188,8 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
         state.moves++; renderAll();
     }
 
-    function handleMouseDown(e) {
-        if (e.button !== 0 || dragInfo.isDragging) return;
+    function handleInteractionStart(e) {
+        if (e.type === 'mousedown' && e.button !== 0) return;
+        if (dragInfo.isDragging) return;
         
         const clickedEl = e.target.closest('.card');
         if (!clickedEl) return;
@@ -215,7 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (cardsToDrag.length === 0) return;
         
-        const onMouseMove = (moveEvent) => {
+        const onInteractionMove = (moveEvent) => {
+            // ★★★ PCでのテキスト選択とスマホでのスクロールを両方防ぐ ★★★
+            moveEvent.preventDefault();
+
             if (!dragInfo.isDragging) {
                 dragInfo.isDragging = true;
                 initiateDrag(e, clickedEl, cardsToDrag, pileType, pileIndex);
@@ -223,11 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGhostPosition(moveEvent);
         };
 
-        const onMouseUp = (upEvent) => {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-            document.removeEventListener('touchmove', onMouseMove);
-            document.removeEventListener('touchend', onMouseUp);
+        const onInteractionEnd = (upEvent) => {
+            document.removeEventListener('mousemove', onInteractionMove);
+            document.removeEventListener('mouseup', onInteractionEnd);
+            document.removeEventListener('touchmove', onInteractionMove);
+            document.removeEventListener('touchend', onInteractionEnd);
 
             if (dragInfo.isDragging) {
                 finishDrag();
@@ -235,14 +240,17 @@ document.addEventListener('DOMContentLoaded', () => {
             dragInfo.isDragging = false;
         };
 
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-        document.addEventListener('touchmove', onMouseMove, { passive: false });
-        document.addEventListener('touchend', onMouseUp);
+        document.addEventListener('mousemove', onInteractionMove);
+        document.addEventListener('mouseup', onInteractionEnd);
+        document.addEventListener('touchmove', onInteractionMove, { passive: false });
+        document.addEventListener('touchend', onInteractionEnd);
     }
     
     function initiateDrag(startEvent, baseEl, cards, pileType, pileIndex) {
         saveStateForUndo();
+        // ★★★ ドラッグ開始時にクラスを付与 ★★★
+        document.body.classList.add('dragging-no-select');
+        
         const rect = baseEl.getBoundingClientRect();
         const touch = startEvent.touches ? startEvent.touches[0] : startEvent;
         
@@ -263,6 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function finishDrag() {
         if (dragInfo.animationFrameId) cancelAnimationFrame(dragInfo.animationFrameId);
+        // ★★★ ドラッグ終了時にクラスを削除 ★★★
+        document.body.classList.remove('dragging-no-select');
+
         const dropTarget = findBestDropTarget();
         if (dragInfo.element) document.body.removeChild(dragInfo.element);
         
@@ -293,7 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ghostContainer.style.position = 'fixed';
         ghostContainer.style.zIndex = '1000';
         ghostContainer.style.pointerEvents = 'none';
-        ghostContainer.style.left = `0px`; ghostContainer.style.top = `0px`;
+        ghostContainer.style.left = `0px`; 
+        ghostContainer.style.top = `0px`;
         ghostContainer.style.width = computedStyle.width;
         ghostContainer.style.height = computedStyle.height;
         
@@ -451,7 +463,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function findHint() {
         document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
-
         const wasteCard = state.waste.length > 0 ? state.waste[state.waste.length - 1] : null;
         if (wasteCard) {
             for (let i = 0; i < 4; i++) {
