@@ -1,0 +1,133 @@
+/* 基本設定と変数 */
+:root {
+    --bg-color: #006400; /* 落ち着いたグリーン */
+    --card-bg: #ffffff;
+    --card-border: #cccccc;
+    --card-shadow: rgba(0, 0, 0, 0.2);
+    --font-color: #ffffff;
+    --red-suit: #d90000;
+    --black-suit: #000000;
+    --card-width-desktop: 100px;
+    --card-height-desktop: 140px;
+    --card-width-tablet: 80px;
+    --card-height-tablet: 112px;
+    --card-width-mobile: calc((100vw - 60px) / 7); /* 画面幅に応じて調整 */
+    --card-height-mobile: calc(var(--card-width-mobile) * 1.4);
+    --gap: 10px;
+    --border-radius: 8px;
+}
+
+/* 基本スタイル */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ゲームコンテナ */
+#game-container { display: flex; flex-direction: column; height: 100%; padding: var(--gap); max-width: 1200px; margin: 0 auto; }
+
+/* ヘッダー */
+.game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--gap); flex-shrink: 0; }
+.stats, .controls { display: flex; gap: 15px; }
+.stat-item { background: rgba(0, 0, 0, 0.2); padding: 5px 10px; border-radius: 5px; }
+button { padding: 8px 15px; border: none; border-radius: 5px; background-color: #4CAF50; color: white; font-size: 1em; cursor: pointer; transition: background-color 0.2s; }
+button:hover { background-color: #45a049; }
+button:disabled { background-color: #9E9E9E; cursor: not-allowed; }
+#settings-btn { background: none; font-size: 1.5em; padding: 0; }
+
+/* ゲームボード */
+#game-board { display: flex; flex-direction: column; gap: var(--gap); flex-grow: 1; width: 100%; }
+.top-area { display: flex; justify-content: space-between; }
+.stock-waste-area, #foundations { display: flex; gap: var(--gap); }
+.card-piles-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--gap); }
+#foundations { grid-template-columns: repeat(4, 1fr); }
+
+/* カードスロットとカード */
+.card-pile-slot { width: var(--card-width-mobile); height: var(--card-height-mobile); border: 2px dashed rgba(255, 255, 255, 0.5); border-radius: var(--border-radius); position: relative; }
+.card {
+    width: var(--card-width-mobile);
+    height: var(--card-height-mobile);
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    position: absolute;
+    cursor: grab;
+    transition: transform 0.2s ease, top 0.2s ease, left 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    background-size: cover;
+}
+.card.red { color: var(--red-suit); }
+.card.black { color: var(--black-suit); }
+.card.red .card-suit { color: var(--red-suit); }
+.card.black .card-suit { color: var(--black-suit); }
+
+.card-top, .card-bottom { display: flex; align-items: center; }
+.card-bottom { transform: rotate(180deg); }
+.card-rank { line-height: 1; }
+
+.card-suit {
+    width: 0.8em;
+    height: 0.8em;
+    margin-left: 3px;
+    background-color: currentColor;
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+}
+.suit-s { -webkit-mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 0L5.8 8.2A5.8 5.8 0 0012 24a5.8 5.8 0 006.2-15.8z"/%3E%3C/svg%3E'); mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 0L5.8 8.2A5.8 5.8 0 0012 24a5.8 5.8 0 006.2-15.8z"/%3E%3C/svg%3E');}
+.suit-h { -webkit-mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/%3E%3C/svg%3E'); mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/%3E%3C/svg%3E');}
+.suit-d { -webkit-mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 0L22 12 12 24 2 12z"/%3E%3C/svg%3E'); mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M12 0L22 12 12 24 2 12z"/%3E%3C/svg%3E');}
+.suit-c { -webkit-mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M18.36 9a4.5 4.5 0 00-6.36-6.36 4.5 4.5 0 10-6.36 6.36l-2 2.12V18h6.24l2.12-2.12a4.5 4.5 0 006.36-6.36zM12 19.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/%3E%3C/svg%3E'); mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M18.36 9a4.5 4.5 0 00-6.36-6.36 4.5 4.5 0 10-6.36 6.36l-2 2.12V18h6.24l2.12-2.12a4.5 4.5 0 006.36-6.36zM12 19.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/%3E%3C/svg%3E');}
+
+.card.facedown { background-color: #005a9c; color: transparent; }
+.card.back1 { background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'150\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'100\' height=\'150\' rx=\'8\' ry=\'8\' fill=\'%23005a9c\'/%3E%3Crect x=\'5\' y=\'5\' width=\'90\' height=\'140\' rx=\'5\' ry=\'5\' fill=\'none\' stroke=\'white\' stroke-width=\'2\'/%3E%3C/svg%3E'); }
+.card.back2 { background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'150\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'100\' height=\'150\' rx=\'8\' ry=\'8\' fill=\'%23c00\'/%3E%3Crect x=\'5\' y=\'5\' width=\'90\' height=\'140\' rx=\'5\' ry=\'5\' fill=\'none\' stroke=\'white\' stroke-width=\'2\'/%3E%3C/svg%3E'); }
+
+#tableau .card-pile-slot:not(:empty) .card:not(:first-child) { margin-top: 25%; }
+
+/* ★★★ ヒントのスタイルを修正 ★★★ */
+.card.hint, .card-pile-slot.hint, #stock.hint {
+    box-shadow: 0 0 15px 5px #ffeb3b !important; /* 他のスタイルを上書き */
+    animation: pulse 1.5s infinite;
+    z-index: 500; /* ヒントを最前面に */
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 15px 5px #ffeb3b; }
+    50% { box-shadow: 0 0 25px 10px #ffeb3b; }
+    100% { box-shadow: 0 0 15px 5px #ffeb3b; }
+}
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #f0f0f0; color: #333; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; }
+.modal-content h2, .modal-content p { margin-bottom: 15px; }
+.modal-content button { margin-top: 10px; }
+.setting-option { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.card-back-selector { display: flex; gap: 10px; }
+.card-back-option { width: 50px; height: 70px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; background-size: cover; }
+.card-back-option.selected { border-color: #4CAF50; }
+
+@media (min-width: 768px) {
+    :root { --gap: 15px; }
+    .card-pile-slot, .card { width: var(--card-width-tablet); height: var(--card-height-tablet); }
+    #tableau .card-pile-slot:not(:empty) .card:not(:first-child) { margin-top: 20%; }
+    button { font-size: 1.1em; }
+}
+@media (min-width: 1024px) {
+    :root { --gap: 20px; }
+    .card-pile-slot, .card { width: var(--card-width-desktop); height: var(--card-height-desktop); }
+    #tableau .card-pile-slot:not(:empty) .card:not(:first-child) { margin-top: 18%; }
+}
